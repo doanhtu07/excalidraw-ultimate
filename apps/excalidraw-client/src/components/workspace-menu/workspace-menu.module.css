@@ -1,0 +1,71 @@
+@reference '#global.css';
+
+.root {
+  @apply relative flex items-stretch border-r border-slate-200;
+}
+
+.trigger {
+  @apply flex min-w-0 items-center gap-1.5 px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-200/60;
+}
+
+.dot,
+.itemDot {
+  @apply h-2 w-2 shrink-0 rounded-full;
+}
+
+.name {
+  @apply max-w-32 truncate;
+}
+
+.chevron {
+  @apply text-[10px] text-slate-400;
+}
+
+.menu {
+  @apply absolute top-full left-0 z-40 mt-px flex w-72 flex-col overflow-hidden rounded-md border border-slate-200 bg-white py-1 shadow-xl;
+}
+
+.itemRow {
+  @apply flex items-center pr-1.5 hover:bg-slate-100;
+}
+
+.item {
+  @apply flex min-w-0 flex-1 items-start gap-2 py-1.5 pl-2.5 text-left;
+}
+
+.itemDot {
+  @apply mt-1.5;
+}
+
+.itemText {
+  @apply flex min-w-0 flex-1 flex-col;
+}
+
+.itemName {
+  @apply truncate text-xs font-medium text-slate-800;
+}
+
+.itemPath {
+  @apply truncate font-mono text-[10px] text-slate-400;
+}
+
+.copy {
+  @apply opacity-50 transition-opacity;
+}
+
+.itemRow:hover .copy,
+.copy:focus-visible {
+  @apply opacity-100;
+}
+
+.currentSlot {
+  @apply flex h-6 w-4 shrink-0 items-center justify-center text-slate-500;
+}
+
+.separator {
+  @apply my-1 border-t border-slate-200;
+}
+
+.add {
+  @apply px-2.5 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100;
+}

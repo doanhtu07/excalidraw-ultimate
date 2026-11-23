@@ -95,3 +95,5 @@ export const Button = ({ className, ...rest }: Props) => {
 6. **`routes/` stays thin** — routes map URLs to feature containers and set head metadata. No UI beyond layout shells, no domain logic.
 
 7. **Component body sections use `// MARK:` comments** (`Variables + States`, `Effects`, `Tab actions`, `Renderers`, …) — same convention as the React Native rule, applied to web components too. See `react-native-component-structure.md`.
+
+8. **Props that accept a React component or node are PascalCase** — `Leading?: ReactNode`, not `leading?: ReactNode`, so a render slot reads like the component it holds. `children` is the one exception, and data/callback props stay camelCase (`tabs`, `onSelectTab`).

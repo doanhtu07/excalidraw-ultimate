@@ -12,6 +12,7 @@ const tab = (name: string): EditorTab => ({
   name,
   dirty: false,
   fileName: null,
+  filePath: null,
   revision: 0,
 })
 

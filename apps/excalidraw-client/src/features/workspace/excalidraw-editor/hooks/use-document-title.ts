@@ -5,15 +5,22 @@ const APP_TITLE = 'Excalidraw Client'
 
 export interface DocumentTitleProps {
   activeTab: EditorTab | null
+  workspaceName: string
 }
 
 /**
- * Keeps the browser tab title in sync with the active tab and its dirty flag.
+ * Keeps the browser tab title in sync with the workspace and active tab, so
+ * parallel workspace windows are easy to tell apart.
  */
-export function useDocumentTitle({ activeTab }: DocumentTitleProps): void {
+export function useDocumentTitle({
+  activeTab,
+  workspaceName,
+}: DocumentTitleProps): void {
   useEffect(() => {
-    document.title = activeTab
-      ? `${activeTab.dirty ? '● ' : ''}${activeTab.name} · ${APP_TITLE}`
-      : APP_TITLE
-  }, [activeTab])
+    const prefix = activeTab
+      ? `${activeTab.dirty ? '● ' : ''}${activeTab.name} · `
+      : ''
+
+    document.title = `${prefix}${workspaceName} · ${APP_TITLE}`
+  }, [activeTab, workspaceName])
 }

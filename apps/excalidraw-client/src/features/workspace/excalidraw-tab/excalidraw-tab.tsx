@@ -1,9 +1,11 @@
-import { Suspense, lazy, memo, useEffect, useState } from 'react'
+import '@excalidraw/excalidraw/index.css'
+
+import { Suspense, lazy, memo, useEffect, useRef, useState } from 'react'
 import styles from './excalidraw-tab.module.css'
 import type { RefObject } from 'react'
+import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ImportedDataState } from '@excalidraw/excalidraw/data/types'
-import type { DrawingScene } from '@/features/workspace/excalidraw-file'
-import '@excalidraw/excalidraw/index.css'
+import type { DrawingScene } from '@/features/workspace/files/scene'
 
 // Excalidraw touches browser APIs at import time, so it is dynamically
 // imported (and therefore only ever executed) in the browser.
@@ -41,6 +43,8 @@ interface ExcalidrawTabProps {
   tabId: string
   scenesRef: RefObject<Map<string, DrawingScene>>
   syncScene: (tabId: string, scene: DrawingScene) => void
+  /** Reports the imperative API of the mounted canvas to the agent bridge. */
+  onApiReady?: (api: ExcalidrawImperativeAPI | null) => void
 }
 
 /**
@@ -52,14 +56,23 @@ export const ExcalidrawTab = memo(function ExcalidrawCanvas({
   tabId,
   scenesRef,
   syncScene,
+  onApiReady,
 }: ExcalidrawTabProps) {
   const [initialData, setInitialData] = useState<ImportedDataState | null>(null)
+  const apiRef = useRef<ExcalidrawImperativeAPI | null>(null)
 
   // MARK: Effects
 
   useEffect(() => {
     setInitialData(buildInitialData(scenesRef.current.get(tabId)))
   }, [tabId, scenesRef])
+
+  useEffect(() => {
+    return () => {
+      apiRef.current = null
+      onApiReady?.(null)
+    }
+  }, [onApiReady])
 
   // MARK: Renderers
 
@@ -70,6 +83,10 @@ export const ExcalidrawTab = memo(function ExcalidrawCanvas({
       <div className={styles.root}>
         <Excalidraw
           initialData={initialData}
+          excalidrawAPI={(api) => {
+            apiRef.current = api
+            onApiReady?.(api)
+          }}
           onChange={(elements, appState, files) =>
             syncScene(tabId, { elements, appState, files })
           }

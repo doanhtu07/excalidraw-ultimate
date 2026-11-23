@@ -12,6 +12,12 @@ export interface EditorTab {
    */
   fileName: string | null
   /**
+   * Absolute path of the drawing, when it was opened through the dev-only
+   * agent bridge (`?agentFile=`). Browsers do not expose paths for drawings
+   * opened through the File System Access API, so this is `null` for those.
+   */
+  filePath: string | null
+  /**
    * Bumped whenever the scene is replaced because the linked file changed on
    * disk, so the canvas remounts with the new scene.
    */

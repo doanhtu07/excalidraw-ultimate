@@ -1,0 +1,9 @@
+@reference '#global.css';
+
+.button {
+  @apply flex h-6 w-6 shrink-0 items-center justify-center rounded text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700;
+}
+
+.copied {
+  @apply text-emerald-600 hover:text-emerald-700;
+}

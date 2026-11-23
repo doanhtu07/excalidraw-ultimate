@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import styles from './editor-tab-bar.module.css'
 import { TAB_DRAG_TYPE, resolveDropTarget } from './drop-target'
-import type { DragEvent } from 'react'
+import type { DragEvent, ReactNode } from 'react'
 import type {
   EditorTab,
   TabDropPosition,
@@ -15,6 +15,7 @@ import { SaveSvg } from '@/components/svgs/save-svg'
 import { cn } from '@/utils/tailwind-merge'
 
 interface EditorTabBarProps {
+  Leading?: ReactNode
   tabs: ReadonlyArray<EditorTab>
   activeTabId: string | null
   onSelectTab: (tabId: string) => void
@@ -30,6 +31,7 @@ interface EditorTabBarProps {
 }
 
 export function EditorTabBar({
+  Leading,
   tabs,
   activeTabId,
   onSelectTab,
@@ -89,6 +91,8 @@ export function EditorTabBar({
 
   return (
     <div className={styles.root}>
+      {Leading}
+
       <div
         className={styles.tabs}
         onDragOver={handleDragOver}

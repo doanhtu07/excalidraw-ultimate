@@ -1,0 +1,57 @@
+@reference '#global.css';
+
+.root {
+  @apply flex h-full w-full items-center justify-center bg-slate-50 p-6;
+}
+
+.card {
+  @apply w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
+}
+
+.title {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+.hint {
+  @apply mt-1 text-xs leading-relaxed text-slate-500;
+}
+
+.code {
+  @apply rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px];
+}
+
+.error {
+  @apply mt-3 rounded border border-red-200 bg-red-50 px-2 py-1.5 text-xs text-red-700;
+}
+
+.list {
+  @apply mt-4 flex flex-col gap-1;
+}
+
+.itemRow {
+  @apply flex items-center gap-1 rounded-md pr-2 hover:bg-slate-100;
+}
+
+.item {
+  @apply flex min-w-0 flex-1 items-start gap-2 py-2 pl-2 text-left;
+}
+
+.dot {
+  @apply mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full;
+}
+
+.itemText {
+  @apply flex min-w-0 flex-col;
+}
+
+.itemName {
+  @apply truncate text-sm font-medium text-slate-800;
+}
+
+.itemPath {
+  @apply truncate font-mono text-[10px] text-slate-400;
+}
+
+.add {
+  @apply mt-4 w-full rounded-md border border-dashed border-slate-300 px-3 py-2 text-xs text-slate-500 hover:border-slate-400 hover:text-slate-700;
+}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { DragEvent as ReactDragEvent } from 'react'
 
 export interface FileDropProps {
-  onDropFile: (file: File, handle: FileSystemFileHandle | null) => void
+  onDropFile: (file: File) => void
 }
 
 export interface FileDropHandlers {
@@ -46,7 +46,7 @@ export function useFileDrop({ onDropFile }: FileDropProps): FileDropHandlers {
         file.type.includes('json') ||
         file.type === 'image/png'
 
-      if (isDrawing) onDropFile(file, null)
+      if (isDrawing) onDropFile(file)
     }
   }
 
