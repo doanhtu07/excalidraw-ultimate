@@ -1,0 +1,7 @@
+{
+  "**/*.{js,jsx,mjs,cjs,ts,tsx}": [
+    "pnpm --filter @apps/excalidraw-client exec eslint --fix",
+    "pnpm --filter @apps/excalidraw-client exec prettier --write"
+  ],
+  "**/*.{css,html,json,md,yaml,yml}": "pnpm --filter @apps/excalidraw-client exec prettier --write"
+}
