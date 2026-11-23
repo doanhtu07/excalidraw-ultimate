@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import styles from '@/styles/home.module.css'
+import { ExcalidrawEditor } from '@/features/workspace/excalidraw-editor/excalidraw-editor'
 
 export const Route = createFileRoute('/')({
   head: () => ({
@@ -9,8 +11,8 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">Excalidraw Client</h1>
+    <main className={styles.root}>
+      <ExcalidrawEditor />
     </main>
   )
 }

@@ -1,0 +1,37 @@
+@reference '#global.css';
+
+.root {
+  @apply flex h-full w-full items-center justify-center bg-slate-50 p-6;
+}
+
+.panel {
+  @apply flex w-full max-w-sm flex-col items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center;
+}
+
+.title {
+  @apply text-sm font-semibold text-slate-800;
+}
+
+.subtitle {
+  @apply mt-1 text-xs text-slate-500;
+}
+
+.actions {
+  @apply flex gap-2;
+}
+
+.primaryButton {
+  @apply rounded-md bg-slate-800 px-3 py-1.5 text-xs font-medium text-white;
+}
+
+.primaryButton:hover {
+  @apply bg-slate-700;
+}
+
+.secondaryButton {
+  @apply rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700;
+}
+
+.secondaryButton:hover {
+  @apply bg-slate-100;
+}

@@ -1,0 +1,81 @@
+@reference '#global.css';
+
+.root {
+  @apply flex h-9 shrink-0 items-stretch border-b border-slate-200 bg-slate-100 text-sm select-none;
+}
+
+.tabs {
+  @apply flex min-w-0 flex-1 items-stretch overflow-x-auto;
+}
+
+.tab {
+  @apply relative flex items-stretch border-r border-slate-200 text-slate-500;
+}
+
+.tab::before,
+.tab::after {
+  @apply pointer-events-none absolute inset-y-0 z-10 w-0.5 bg-slate-900 opacity-0;
+
+  content: '';
+}
+
+.tab::before {
+  @apply left-0;
+}
+
+.tab::after {
+  @apply right-0;
+}
+
+.dragging {
+  @apply opacity-40;
+}
+
+.dropBefore::before,
+.dropAfter::after {
+  @apply opacity-100;
+}
+
+.tab:hover {
+  @apply bg-slate-200/60 text-slate-700;
+}
+
+.tab.active {
+  @apply bg-white text-slate-900;
+}
+
+.tabButton {
+  @apply flex min-w-0 cursor-grab items-center gap-2 pr-7 pl-3;
+}
+
+.dragging .tabButton {
+  @apply cursor-grabbing;
+}
+
+.tabName {
+  @apply max-w-40 truncate;
+}
+
+.dot {
+  @apply h-2 w-2 shrink-0 rounded-full bg-slate-500;
+}
+
+.tab:hover .dot {
+  display: none;
+}
+
+.close {
+  @apply absolute top-1/2 right-1 hidden h-5 w-5 -translate-y-1/2 items-center justify-center rounded text-slate-400;
+}
+
+.close:hover {
+  @apply bg-slate-200 text-slate-800;
+}
+
+.tab:hover .close {
+  display: flex;
+}
+
+.actions {
+  @apply flex items-center gap-0.5 border-l border-slate-200 px-1.5;
+}

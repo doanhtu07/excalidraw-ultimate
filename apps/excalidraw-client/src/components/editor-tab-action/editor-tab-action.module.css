@@ -1,0 +1,13 @@
+@reference '#global.css';
+
+.action {
+  @apply flex h-7 w-7 items-center justify-center rounded text-slate-500;
+}
+
+.action:hover {
+  @apply bg-slate-200 text-slate-800;
+}
+
+.action:disabled {
+  @apply pointer-events-none opacity-40;
+}

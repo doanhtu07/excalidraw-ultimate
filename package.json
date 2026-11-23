@@ -4,9 +4,10 @@
   "keywords": [],
   "packageManager": "pnpm@12.16.1",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "typecheck": "pnpm -r typecheck"
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
