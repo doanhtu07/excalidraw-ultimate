@@ -85,7 +85,7 @@ The Vite dev server mounts these (they do not exist in a production build):
 | `POST /__excalidraw/agent/workspaces`        | Register `{ root, name? }`                           |
 | `POST /__excalidraw/agent/workspace/init`    | Create `.excalidraw-ultimate/` for a project         |
 
-Rules: `.excalidraw` / `.json` only, 20 MB max, no `.git` or `node_modules` segments, atomic writes through a sibling temp file. Set `EXCALIDRAW_ULTIMATE_ALLOWED_ROOTS` (path-delimiter-separated directories) to confine access to one or more trees.
+Rules: `.excalidraw` / `.json` only, 20 MB max, no `.git` or `node_modules` segments, atomic writes through a sibling temp file. Set `EXCALIDRAW_ULTIMATE_ALLOWED_ROOTS` (path-delimiter-separated directories) in the app's `.env` to confine access to one or more trees.
 
 ## Workspaces and persistence
 
@@ -98,7 +98,7 @@ Tabs and unsaved scenes persist in `<project>/.excalidraw-ultimate/`:
 
 Clean path-linked tabs reload from their source file. A nested `.gitignore` (`*`) keeps the state directory out of git. Changing the allow-list still requires a dev-server restart; normal drawing work does not.
 
-Runtime state for the checkout lives in `<repo>/.excalidraw-ultimate/runtime/` (dev-server log/PID, debug browser profile). The workspace switcher index is `<repo>/.excalidraw-ultimate/workspaces.json`. Snapshots and default screenshots live under each workspace's `.excalidraw-ultimate/`. Override the runtime location with `EXCALIDRAW_ULTIMATE_STATE_DIR`.
+Runtime state for the checkout lives in `<repo>/.excalidraw-ultimate/runtime/` (dev-server log/PID, debug browser profile). The workspace switcher index is `<repo>/.excalidraw-ultimate/workspaces.json`. Snapshots and default screenshots live under each workspace's `.excalidraw-ultimate/`. Override the runtime location with `EXCALIDRAW_ULTIMATE_STATE_DIR`. All settings for the skill and the app live in the app root's `.env`; `EXCALIDRAW_ULTIMATE_ENV_FILE` points both at another file.
 
 ## Typical interaction script
 

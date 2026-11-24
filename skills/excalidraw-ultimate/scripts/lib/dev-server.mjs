@@ -51,6 +51,10 @@ export function readLogTail(lines = 40) {
  * Starts `pnpm --filter @apps/excalidraw-client dev` detached if the app is not
  * already up. The dev server is the only "backend" the skill needs: the agent
  * bridge lives in the page and the file endpoints are a Vite middleware.
+ *
+ * The child inherits this process's environment, including
+ * `EXCALIDRAW_ULTIMATE_ENV_FILE`, and reads the same `.env` file as the CLI, so
+ * the port and allow-list cannot drift.
  */
 export async function ensureDevServer(appRoot) {
   const running = await appHealth()

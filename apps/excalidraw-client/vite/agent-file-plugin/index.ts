@@ -1,5 +1,5 @@
-import { resolveAllowedRoots } from './agent/allowed-roots.ts'
-import { agentRouter } from './agent/router.ts'
+import { agentRouter } from './router.ts'
+import type { AppSettings } from './config.ts'
 import type { Plugin } from 'vite'
 
 /**
@@ -15,21 +15,16 @@ import type { Plugin } from 'vite'
  */
 export const AGENT_FILE_PREFIX = '/__excalidraw/agent'
 
-export function agentFilePlugin(): Plugin {
+export function agentFilePlugin(settings: AppSettings): Plugin {
   return {
     name: 'excalidraw-agent-file',
     apply: 'serve',
     configureServer(server) {
-      const allowedRoots = resolveAllowedRoots(
-        server.config.mode,
-        server.config.envDir,
-      )
-
       server.middlewares.use(AGENT_FILE_PREFIX, (request, response) => {
         void agentRouter({
           request,
           response,
-          allowedRoots,
+          allowedRoots: settings.allowedRoots,
           appRoot: server.config.root,
         })
       })

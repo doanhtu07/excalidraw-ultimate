@@ -41,6 +41,34 @@ node ~/excalidraw-ultimate/skills/excalidraw-ultimate/scripts/install.mjs --glob
 
 The installer records the app root inside copied skill directories (symlinked installs resolve back to this checkout). Re-running upgrades in place; `--copy`, `--force`, `--dry-run`, and `--json` are supported.
 
+## Configuration
+
+All settings come from one file: `.env` at the root of this checkout. Copy the
+example and edit it:
+
+```sh
+cp .env.example .env
+```
+
+`.env` is ignored by Git. Every setting has exactly one name, so nothing has to
+be kept in sync: omit a variable to use its default, or set the same variable in
+your shell to override the file for one run.
+
+| Variable                            | Default                               | Used by            |
+| ----------------------------------- | ------------------------------------- | ------------------ |
+| `EXCALIDRAW_ULTIMATE_ROOT`          | auto-detected checkout                | skill              |
+| `EXCALIDRAW_ULTIMATE_PROJECT`       | git root of the current directory     | skill              |
+| `EXCALIDRAW_ULTIMATE_URL`           | `http://localhost:3000`               | skill + dev server |
+| `EXCALIDRAW_ULTIMATE_CDP_PORT`      | `9333`                                | skill              |
+| `EXCALIDRAW_ULTIMATE_STATE_DIR`     | `<repo>/.excalidraw-ultimate/runtime` | skill              |
+| `EXCALIDRAW_ULTIMATE_BROWSER`       | auto-detected Chrome/Brave/Edge       | skill              |
+| `EXCALIDRAW_ULTIMATE_ALLOWED_ROOTS` | any path except `.git`/`node_modules` | app (dev server)   |
+
+The port in `EXCALIDRAW_ULTIMATE_URL` is also the port the dev server binds.
+`EXCALIDRAW_ULTIMATE_ALLOWED_ROOTS` takes directories separated by the platform
+path delimiter (`:` on macOS/Linux, `;` on Windows), and
+`EXCALIDRAW_ULTIMATE_ENV_FILE` makes both readers load a different file.
+
 ## Where it writes
 
 The app keeps all of its state in `.excalidraw-ultimate/` folders, and only two kinds of them exist:

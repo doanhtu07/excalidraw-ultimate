@@ -8,6 +8,7 @@ import {
   CDP_PORT,
   CDP_URL,
   ensureStateDir,
+  setting,
 } from './config.mjs'
 import { fetchJson, waitFor } from './http.mjs'
 
@@ -68,8 +69,10 @@ function fromPath(name) {
 }
 
 export function findBrowserBinary() {
-  if (process.env.EXCALIDRAW_ULTIMATE_BROWSER) {
-    return process.env.EXCALIDRAW_ULTIMATE_BROWSER
+  const configured = setting('EXCALIDRAW_ULTIMATE_BROWSER', 'browser')
+
+  if (configured) {
+    return configured
   }
 
   if (process.platform === 'darwin') {

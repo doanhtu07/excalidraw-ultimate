@@ -5,6 +5,7 @@ import path from 'node:path'
 import {
   BASE_URL,
   devServerLogPath,
+  envFile,
   resolveAppRoot,
   resolveProjectRoot,
   workspaceStateDir,
@@ -76,11 +77,13 @@ Lifecycle:
   stop --all                     Stop the debug browser and our dev server
 
 Environment:
+  Settings load from the app root's .env; the shell overrides them.
   EXCALIDRAW_ULTIMATE_ROOT       Monorepo root (normally written by install)
   EXCALIDRAW_ULTIMATE_PROJECT    Workspace root (default: git root of cwd)
   EXCALIDRAW_ULTIMATE_URL        App URL (default ${BASE_URL})
   EXCALIDRAW_ULTIMATE_CDP_PORT   Debug port (default 9333)
   EXCALIDRAW_ULTIMATE_BROWSER    Chrome/Brave/Edge binary override
+  EXCALIDRAW_ULTIMATE_ENV_FILE   Read settings from another .env file
 `
 
 // MARK: Arguments
@@ -287,6 +290,7 @@ async function main() {
       appRoot,
       workspaceRoot,
       appUrl: url,
+      envFile: envFile(),
       pages: pages.map((page) => page.url),
       devServer: health ? 'up' : 'down',
       devServerHealth: health,

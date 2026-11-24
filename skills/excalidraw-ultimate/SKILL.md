@@ -18,6 +18,8 @@ Install (records the app root inside copied skills, then links/copies this skill
 node "<skill>/scripts/install.mjs" --global --target claude,opencode,agents
 ```
 
+Shared settings for the skill and the app live in one `.env` file at the app root; copy `.env.example` to `.env` there to start (the file is Git-ignored), or set `EXCALIDRAW_ULTIMATE_ENV_FILE` to another path. The shell overrides the file, and every setting has exactly one name.
+
 Project-only install (run from the project you want to use it in; writes to that project's `.claude/skills`, `.opencode/skills`, `.agents/skills`):
 
 ```bash

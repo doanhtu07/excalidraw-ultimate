@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { parseEnv } from 'node:util'
 
 /**
  * Shared locations and app discovery for the excalidraw-ultimate skill.
@@ -14,23 +15,146 @@ export const LIB_DIR = import.meta.dirname
 export const SCRIPTS_DIR = path.resolve(LIB_DIR, '..')
 export const SKILL_DIR = path.resolve(SCRIPTS_DIR, '..')
 
+// MARK: Constants
+
 const INSTALL_CONFIG = path.join(SKILL_DIR, 'install.json')
 const STATE_DIR_NAME = '.excalidraw-ultimate'
+const ENV_PREFIX = 'EXCALIDRAW_ULTIMATE_'
+const ENV_FILE_NAME = '.env'
 
-export const BASE_URL =
-  process.env.EXCALIDRAW_ULTIMATE_URL ?? 'http://localhost:3000'
+// MARK: Env file
 
-export const CDP_PORT = Number(
-  process.env.EXCALIDRAW_ULTIMATE_CDP_PORT ?? '9333',
+/**
+ * One `.env` file configures the skill and the app. It lives at the app root so
+ * both readers find the same file; `EXCALIDRAW_ULTIMATE_ENV_FILE` points them
+ * elsewhere. The shell wins, but it uses the same variable names.
+ */
+function envFileCandidates() {
+  const installedRoot = readConfig()?.appRoot
+  const checkoutRoot = path.resolve(SKILL_DIR, '..', '..')
+
+  return [
+    process.env.EXCALIDRAW_ULTIMATE_ENV_FILE,
+    installedRoot ? path.join(installedRoot, ENV_FILE_NAME) : null,
+    path.join(checkoutRoot, ENV_FILE_NAME),
+  ].filter(Boolean)
+}
+
+let loadedEnvFile = null
+
+/**
+ * Loads the first `.env` file found without overriding the shell. Only
+ * `EXCALIDRAW_ULTIMATE_*` keys are imported. A missing file is fine unless it
+ * was named explicitly; a malformed one fails loudly.
+ */
+function loadEnvFile() {
+  const explicit = process.env.EXCALIDRAW_ULTIMATE_ENV_FILE
+
+  for (const file of new Set(
+    envFileCandidates().map((candidate) => path.resolve(candidate)),
+  )) {
+    let text
+
+    try {
+      text = readFileSync(file, 'utf8')
+    } catch (error) {
+      if (
+        explicit &&
+        file === path.resolve(explicit) &&
+        error.code === 'ENOENT'
+      ) {
+        throw new Error(
+          `EXCALIDRAW_ULTIMATE_ENV_FILE points to a missing file: ${file}`,
+        )
+      }
+
+      continue
+    }
+
+    let parsed
+
+    try {
+      parsed = parseEnv(text)
+    } catch (error) {
+      throw new Error(
+        `Could not parse ${file}: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
+
+    for (const [key, value] of Object.entries(parsed)) {
+      if (key.startsWith(ENV_PREFIX) && process.env[key] === undefined) {
+        process.env[key] = value
+      }
+    }
+
+    loadedEnvFile = file
+
+    return
+  }
+}
+
+loadEnvFile()
+
+/** The `.env` file that was loaded, if any. */
+export function envFile() {
+  return loadedEnvFile
+}
+
+/** Reads one setting. Every setting has exactly one name: its env variable. */
+export function setting(name) {
+  const value = process.env[name]
+
+  return value === undefined || value === '' ? undefined : value
+}
+
+/** Reads a positive integer setting, rejecting typos instead of yielding NaN. */
+function numberSetting(name, fallback) {
+  const raw = setting(name)
+
+  if (raw === undefined) return fallback
+
+  const value = Number(raw)
+
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`${name} must be a positive integer, got "${raw}".`)
+  }
+
+  return value
+}
+
+/** Reads an absolute URL, normalised without a trailing slash. */
+function urlSetting(name, fallback) {
+  const raw = setting(name) ?? fallback
+
+  let url
+
+  try {
+    url = new URL(raw)
+  } catch {
+    throw new Error(`${name} must be an absolute URL, got "${raw}".`)
+  }
+
+  return url.href.replace(/\/$/, '')
+}
+
+// MARK: App settings
+
+export const BASE_URL = urlSetting(
+  'EXCALIDRAW_ULTIMATE_URL',
+  'http://localhost:3000',
 )
+
+export const CDP_PORT = numberSetting('EXCALIDRAW_ULTIMATE_CDP_PORT', 9333)
 
 export const CDP_URL = `http://127.0.0.1:${CDP_PORT}`
 
 export const AGENT_HEALTH_URL = `${BASE_URL}/__excalidraw/agent/health`
 
+// MARK: State paths
+
 /** Runtime state for this checkout: logs, PIDs, and the debug browser profile. */
 export function stateDir() {
-  const override = process.env.EXCALIDRAW_ULTIMATE_STATE_DIR
+  const override = setting('EXCALIDRAW_ULTIMATE_STATE_DIR')
 
   if (override) return path.resolve(override)
 
@@ -66,6 +190,8 @@ export function ensureStateDir() {
   return directory
 }
 
+// MARK: Install record
+
 /**
  * Reads the install record that a copied skill carries. A symlinked skill
  * resolves back to this checkout, so it does not need one.
@@ -88,13 +214,15 @@ export function writeConfig(directory, config) {
   )
 }
 
+// MARK: Project root
+
 /**
  * Resolves the project this command belongs to. Agents run from a repo, so the
  * git root is the natural workspace key; `EXCALIDRAW_ULTIMATE_PROJECT` can
  * override it for unusual layouts.
  */
 export function resolveProjectRoot() {
-  const override = process.env.EXCALIDRAW_ULTIMATE_PROJECT
+  const override = setting('EXCALIDRAW_ULTIMATE_PROJECT')
 
   if (override) return path.resolve(override)
 
@@ -113,6 +241,8 @@ export function resolveProjectRoot() {
   return process.cwd()
 }
 
+// MARK: Workspace URL
+
 /** URL of the app page dedicated to a workspace. */
 export function workspaceUrl(root) {
   const url = new URL(BASE_URL)
@@ -121,6 +251,8 @@ export function workspaceUrl(root) {
 
   return url.toString()
 }
+
+// MARK: App discovery
 
 function isAppRoot(candidate) {
   return existsSync(
@@ -163,7 +295,7 @@ function walkForAppRoot(start) {
  */
 export function resolveAppRoot() {
   const candidates = [
-    process.env.EXCALIDRAW_ULTIMATE_ROOT,
+    setting('EXCALIDRAW_ULTIMATE_ROOT'),
     readConfig()?.appRoot,
     walkForAppRoot(process.cwd()),
     walkForAppRoot(SKILL_DIR),
@@ -185,6 +317,8 @@ export function resolveAppRoot() {
     ].join('\n'),
   )
 }
+
+// MARK: Version
 
 export function packageVersion(appRoot) {
   try {
