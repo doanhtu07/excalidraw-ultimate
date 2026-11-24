@@ -58,8 +58,21 @@
   @apply opacity-100;
 }
 
-.currentSlot {
-  @apply flex h-6 w-4 shrink-0 items-center justify-center text-slate-500;
+.actionSlot {
+  @apply flex h-6 w-6 shrink-0 items-center justify-center;
+}
+
+.currentMarker {
+  @apply flex h-6 w-6 items-center justify-center text-slate-500;
+}
+
+.remove {
+  @apply flex h-6 w-6 shrink-0 items-center justify-center rounded text-slate-400 opacity-50 transition-all hover:bg-red-50 hover:text-red-600;
+}
+
+.itemRow:hover .remove,
+.remove:focus-visible {
+  @apply opacity-100;
 }
 
 .separator {

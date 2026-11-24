@@ -28,6 +28,7 @@ interface WorkspaceEditorProps {
   onSelectWorkspace: (root: string) => void
   onAddWorkspace: () => void
   onRefreshWorkspaces: () => void
+  onRemoveWorkspace: (root: string) => Promise<void>
 }
 
 /** The editor for one workspace: tabs, canvas, persistence, and dialogs. */
@@ -38,6 +39,7 @@ export function WorkspaceEditor({
   onSelectWorkspace,
   onAddWorkspace,
   onRefreshWorkspaces,
+  onRemoveWorkspace,
 }: WorkspaceEditorProps) {
   const {
     tabs,
@@ -134,6 +136,7 @@ export function WorkspaceEditor({
             onSelect={onSelectWorkspace}
             onAdd={onAddWorkspace}
             onRefresh={onRefreshWorkspaces}
+            onRemove={onRemoveWorkspace}
           />
         }
         tabs={tabs}

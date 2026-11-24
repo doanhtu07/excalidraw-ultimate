@@ -3,6 +3,7 @@ import styles from './workspace-menu.module.css'
 import type { AgentWorkspace } from '@/features/workspace/files/workspace-registry'
 import { CopyPathButton } from '@/components/copy-path-button/copy-path-button'
 import { CheckSvg } from '@/components/svgs/check-svg'
+import { TrashSvg } from '@/components/svgs/trash-svg'
 import {
   workspaceHue,
   workspaceLabel,
@@ -14,6 +15,7 @@ interface WorkspaceMenuProps {
   onSelect: (root: string) => void
   onAdd: () => void
   onRefresh: () => void
+  onRemove: (root: string) => Promise<void>
 }
 
 export function WorkspaceMenu({
@@ -22,6 +24,7 @@ export function WorkspaceMenu({
   onSelect,
   onAdd,
   onRefresh,
+  onRemove,
 }: WorkspaceMenuProps) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -29,6 +32,20 @@ export function WorkspaceMenu({
   const toggle = () => {
     if (!open) onRefresh()
     setOpen((prev) => !prev)
+  }
+
+  const remove = async (workspace: AgentWorkspace) => {
+    const confirmed = window.confirm(
+      `Remove "${workspace.name}" from the workspace list?\n\n${workspace.root}\n\nThe folder and its drawings are not deleted.`,
+    )
+
+    if (!confirmed) return
+
+    try {
+      await onRemove(workspace.root)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+    }
   }
 
   // MARK: Effects
@@ -114,11 +131,25 @@ export function WorkspaceMenu({
 
                 <CopyPathButton path={workspace.root} className={styles.copy} />
 
-                <span
-                  className={styles.currentSlot}
-                  title={isCurrent ? 'Current workspace' : undefined}
-                >
-                  {isCurrent && <CheckSvg />}
+                <span className={styles.actionSlot}>
+                  {isCurrent ? (
+                    <span
+                      className={styles.currentMarker}
+                      title="Current workspace"
+                    >
+                      <CheckSvg />
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      title="Remove from workspace list"
+                      aria-label={`Remove ${workspace.name} from the workspace list`}
+                      className={styles.remove}
+                      onClick={() => void remove(workspace)}
+                    >
+                      <TrashSvg />
+                    </button>
+                  )}
                 </span>
               </div>
             )

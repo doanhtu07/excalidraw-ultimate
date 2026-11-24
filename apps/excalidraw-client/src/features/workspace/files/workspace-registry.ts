@@ -64,3 +64,14 @@ export async function listAgentWorkspaces(): Promise<Array<AgentWorkspace>> {
 
   return ((await response.json()) as WorkspacesPayload).workspaces
 }
+
+/** Removes a workspace from the switcher registry, not from disk. */
+export async function removeAgentWorkspace(root: string): Promise<void> {
+  const response = await fetch(agentUrl('/workspaces', { root }), {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw await readAgentError(response, `Could not remove ${root}.`)
+  }
+}

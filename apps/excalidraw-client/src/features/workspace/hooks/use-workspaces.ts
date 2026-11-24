@@ -3,14 +3,19 @@ import type { AgentWorkspace } from '@/features/workspace/files/workspace-regist
 import {
   listAgentWorkspaces,
   registerAgentWorkspace,
+  removeAgentWorkspace,
 } from '@/features/workspace/files/workspace-registry'
-import { workspaceLabel } from '@/features/workspace/workspace-paths'
+import {
+  sortWorkspacesByRoot,
+  workspaceLabel,
+} from '@/features/workspace/workspace-paths'
 
 export interface WorkspacesState {
   workspaces: Array<AgentWorkspace>
   loading: boolean
   error: string | null
   refresh: () => void
+  remove: (root: string) => Promise<void>
 }
 
 function withCurrent(
@@ -18,17 +23,17 @@ function withCurrent(
   currentRoot: string | null,
 ): Array<AgentWorkspace> {
   if (!currentRoot || workspaces.some((item) => item.root === currentRoot)) {
-    return workspaces
+    return sortWorkspacesByRoot(workspaces)
   }
 
-  return [
+  return sortWorkspacesByRoot([
     {
       root: currentRoot,
       name: workspaceLabel(currentRoot),
       updatedAt: new Date().toISOString(),
     },
     ...workspaces,
-  ]
+  ])
 }
 
 /** Lists registered workspaces and keeps the current one in the list. */
@@ -52,6 +57,14 @@ export function useWorkspaces(currentRoot: string | null): WorkspacesState {
     })()
   }, [currentRoot])
 
+  const remove = useCallback(async (root: string) => {
+    await removeAgentWorkspace(root)
+
+    setWorkspaces((current) =>
+      current.filter((workspace) => workspace.root !== root),
+    )
+  }, [])
+
   // MARK: Effects
 
   useEffect(() => {
@@ -69,5 +82,5 @@ export function useWorkspaces(currentRoot: string | null): WorkspacesState {
 
   // MARK: Return value
 
-  return { workspaces, loading, error, refresh }
+  return { workspaces, loading, error, refresh, remove }
 }

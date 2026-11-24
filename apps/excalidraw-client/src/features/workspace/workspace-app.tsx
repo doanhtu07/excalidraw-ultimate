@@ -28,7 +28,7 @@ export function WorkspaceApp() {
     () => workspaceRootFromLocation() ?? storedWorkspaceRoot(),
   )
   const [adding, setAdding] = useState(false)
-  const { workspaces, loading, error, refresh } = useWorkspaces(root)
+  const { workspaces, loading, error, refresh, remove } = useWorkspaces(root)
 
   const openWorkspace = async (nextRoot: string) => {
     rememberWorkspaceRoot(nextRoot)
@@ -87,6 +87,7 @@ export function WorkspaceApp() {
           onSelectWorkspace={openWorkspace}
           onAddWorkspace={() => setAdding(true)}
           onRefreshWorkspaces={refresh}
+          onRemoveWorkspace={remove}
         />
       ) : (
         <WorkspaceChooser

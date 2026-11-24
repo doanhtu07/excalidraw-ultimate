@@ -10,6 +10,7 @@ import {
   initializeWorkspace,
   readWorkspaceRegistry,
   registerWorkspace,
+  removeWorkspace,
 } from './workspaces.ts'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -23,6 +24,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
  * - `DELETE /file?path=<absolute path>` — delete a drawing or state file.
  * - `GET /workspaces` — registered workspaces.
  * - `POST /workspaces` with `{ root, name? }` — upsert a workspace.
+ * - `DELETE /workspaces?root=<absolute path>` — forget a workspace.
  * - `POST /workspace/init` with `{ root }` — create `.excalidraw-ultimate/`.
  */
 export async function agentRouter(input: {
@@ -109,6 +111,18 @@ export async function agentRouter(input: {
       })
 
       sendJson(response, 200, { workspace })
+      return
+    }
+
+    // DELETE {prefix}/workspaces — forget a workspace without deleting files.
+    if (pathname === '/workspaces' && request.method === 'DELETE') {
+      const root = url.searchParams.get('root')
+
+      if (!root) throw new AgentFileError(400, 'Missing ?root=.')
+
+      sendJson(response, 200, {
+        root: await removeWorkspace({ rootInput: root, allowedRoots, appRoot }),
+      })
       return
     }
 

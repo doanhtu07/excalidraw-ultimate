@@ -65,3 +65,12 @@ export function workspaceHue(root: string): number {
 
   return Math.abs(hash) % 360
 }
+
+/** Path order keeps the switcher readable as the registry grows. */
+export function sortWorkspacesByRoot<T extends { root: string }>(
+  workspaces: ReadonlyArray<T>,
+): Array<T> {
+  return [...workspaces].sort((left, right) =>
+    left.root.localeCompare(right.root, undefined, { sensitivity: 'base' }),
+  )
+}

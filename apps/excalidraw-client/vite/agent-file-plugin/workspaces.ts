@@ -103,6 +103,24 @@ async function writeWorkspaceRegistry(
   }
 }
 
+async function updateWorkspaceRegistry(
+  appRoot: string,
+  update: (workspaces: Array<WorkspaceEntry>) => Array<WorkspaceEntry>,
+): Promise<void> {
+  const run = registryQueue.then(async () => {
+    const next = update(await readWorkspaceRegistry(appRoot))
+
+    await writeWorkspaceRegistry(appRoot, next)
+  })
+
+  registryQueue = run.then(
+    () => {},
+    () => {},
+  )
+
+  await run
+}
+
 async function assertDirectory(absolutePath: string): Promise<void> {
   let stat
 
@@ -135,21 +153,28 @@ export async function registerWorkspace(input: {
     updatedAt: new Date().toISOString(),
   }
 
-  const update = async () => {
-    const workspaces = await readWorkspaceRegistry(appRoot)
-    const next = [entry, ...workspaces.filter((item) => item.root !== root)]
-
-    await writeWorkspaceRegistry(appRoot, next.slice(0, 100))
-  }
-
-  const run = registryQueue.then(update, update)
-  registryQueue = run.then(
-    () => {},
-    () => {},
+  await updateWorkspaceRegistry(appRoot, (workspaces) =>
+    [entry, ...workspaces.filter((item) => item.root !== root)].slice(0, 100),
   )
-  await run
 
   return entry
+}
+
+/** Drops a workspace from the switcher registry without touching its files. */
+export async function removeWorkspace(input: {
+  rootInput: string
+  allowedRoots: ReadonlyArray<string>
+  appRoot: string
+}): Promise<string> {
+  const { rootInput, allowedRoots, appRoot } = input
+
+  const root = resolveDirectoryPath(rootInput, allowedRoots)
+
+  await updateWorkspaceRegistry(appRoot, (workspaces) =>
+    workspaces.filter((item) => item.root !== root),
+  )
+
+  return root
 }
 
 export async function initializeWorkspace(input: {
